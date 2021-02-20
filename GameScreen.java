@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g3d.particles.batches.BillboardParticleBatch;
+import com.badlogic.gdx.math.MathUtils;
 
 public class GameScreen implements Screen {
 
@@ -36,23 +37,15 @@ public class GameScreen implements Screen {
 		Board.p.handleInput(delta);
 		
 		cam.position.set(Board.p.position.x, Board.p.position.y, 0);
+
+		cam.position.x = MathUtils.clamp(cam.position.x, VIEWPORT_WIDTH / 2f, 100 - VIEWPORT_WIDTH / 2f);
+		cam.position.y = MathUtils.clamp(cam.position.y, VIEWPORT_HEIGHT / 2f, 100 - VIEWPORT_HEIGHT / 2f);
+		
 		cam.update();
 		
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		board.drawBoard();
-		
-		/*
-		 * game.sb.flush();
-		 * Multiplayer.sr.begin(); Multiplayer.sr.setProjectionMatrix(cam.combined);
-		 * Board.p.hitBox.setPosition(Board.p.position);
-		 * Multiplayer.sr.rect(Board.p.hitBox.getX(), Board.p.hitBox.getY(),
-		 * Board.p.hitBox.getWidth(), Board.p.hitBox.getHeight());
-		 * Multiplayer.sr.rect(Board.e.hitBox.getX(), Board.e.hitBox.getY(),
-		 * Board.e.hitBox.getWidth(), Board.e.hitBox.getHeight());
-		 * Multiplayer.sr.end(); Multiplayer.sr.flush();
-		 */
-		
 		game.sb.setProjectionMatrix(hud.stage.getCamera().combined);
 		hud.stage.draw();
 	}

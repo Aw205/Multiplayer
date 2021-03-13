@@ -10,30 +10,28 @@ public class Inventory extends Table {
 	
 	static Image frame = new Image(new Texture(Gdx.files.internal("windowFrame.png")));
 	static Image slot = new Image(new Texture(Gdx.files.internal("slotTopLeft.png")));
-	Table inventoryFrame = new Table();
+	
 
 	public Inventory() {
-	
-		this.setTouchable(Touchable.enabled);
+		
 		this.initSlots();
 		this.setBackground(frame.getDrawable());
-		this.add(inventoryFrame);
+		this.setDebug(false);
 		this.pack();
 	
 	}
 	
 	public void initSlots() {
-		inventoryFrame.setDebug(true);
-		inventoryFrame.setTouchable(Touchable.enabled);
-		
+		this.setDebug(true);
+
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				InventorySlot s = new InventorySlot();
-				s.setBounds(100, 100, 10, 10);
 				s.setDebug(true);
-				inventoryFrame.add(s);
+				this.add(s);
 			}
-			inventoryFrame.row();
+			this.row();
 		}
+
 	}
 }

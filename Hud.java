@@ -23,6 +23,7 @@ public class Hud{
 	private Table table = new Table();
 	
 	static Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+	
 	private ProgressBar healthBar = new ProgressBar(0, 10, 1, false, skin);
 	private Image lvlDisplay = new Image(new Texture(Gdx.files.internal("exp_lvl_HUD.png")));
 	
@@ -35,6 +36,7 @@ public class Hud{
 		
 		stage = new Stage(stageViewport, sb);
 		stage.addActor(table);
+		
 		addListener();
 		setUpTable();
 		lvlDisplay.setScale(2, 2);
@@ -46,6 +48,7 @@ public class Hud{
 		table.setFillParent(true);
 		//table.add(lvlDisplay).expand().top().left().padTop(50);
 		createInventory();
+		createLoadout();
 	//	table.row();
 		//table.add(healthBar);
 	}
@@ -67,10 +70,17 @@ public class Hud{
 	private void createInventory() {
 		
 		in = new Inventory();
-		//in.setDebug(true);
 		in.setVisible(true);	
 		in.setPosition(Gdx.graphics.getWidth()/2 - in.getWidth()/2, Gdx.graphics.getHeight()/2 - in.getHeight()/2);
-		//table.setDebug(true);
-		table.addActor(in);
+		table.setDebug(true);
+		//table.add(healthBar).expandX();
+		table.add(in).expandY();
+		table.row().expandX();
+	}
+	
+	private void createLoadout() {
+		Loadout loadout = new Loadout();
+		loadout.setVisible(true);
+		table.add(loadout).left();
 	}
 }

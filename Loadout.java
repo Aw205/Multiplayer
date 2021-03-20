@@ -13,7 +13,7 @@ public class Loadout extends Table{
 	
 
 	public Loadout() {
-		
+		//this.setDebug(true);
 		this.add(left);
 		this.add(mid);
 		this.add(right);

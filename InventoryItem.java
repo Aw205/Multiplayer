@@ -12,10 +12,11 @@ public class InventoryItem extends Image {
 	Image sword = new Image(new Texture(Gdx.files.internal("sampleSword.png")));
 	
 	public InventoryItem() {
+		//this.setDebug(true);
 		this.setDrawable(sword.getDrawable());
-		
 		this.addListener(new DragListener() {
 		    public void drag(InputEvent event, float x, float y, int pointer) {
+		    	InventoryItem.this.getParent().setZIndex(8);
 		        InventoryItem.this.moveBy(x - InventoryItem.this.getWidth() / 2, y - InventoryItem.this.getHeight() / 2);
 		    }
 		    

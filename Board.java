@@ -1,6 +1,8 @@
 package com.mygdx.game;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapLayer;
@@ -15,19 +17,20 @@ import com.badlogic.gdx.math.Vector2;
 
 public class Board {
 	
-	static class Node{	
-		boolean isBlocked=false;
+	static class Node {
+		boolean isBlocked = false;
 		Vector2 position;
 		Node parent;
-		int g=0;
-		int rank=-1;
-	
+		int g = 0;
+		int rank = -1;
+
 		public Node(Vector2 position) {
-			this.position=position;
+			this.position = position;
 		}
 	}
 
 	static Map<String, Player> players = new HashMap<String, Player>();
+	static List<Fireball> projectiles = new ArrayList<Fireball>();
 	static Player p;
 	private TiledMapRenderer renderer;
 	private TiledMap map;
@@ -59,13 +62,21 @@ public class Board {
 		renderer.render();
 
 		Multiplayer.sb.begin();
-		
+
 		e.updateMovement(Gdx.graphics.getDeltaTime());
 		e.drawEnemy(Multiplayer.sb,Gdx.graphics.getDeltaTime());
 		for (Player p : players.values()) {
 			p.drawPlayer(Multiplayer.sb);
 		}
+		drawProjectiles(Gdx.graphics.getDeltaTime());
 		Multiplayer.sb.end();
+	}
+	
+	private void drawProjectiles(float deltaTime) {
+		projectiles.removeIf(e-> (!e.isAlive && e.currentAnimation.isAnimationFinished(e.stateTime)));
+		for(Fireball fb: projectiles) {
+			fb.draw(Multiplayer.sb, deltaTime);
+		}
 	}
 	
 	private void initPlayer() {
@@ -87,7 +98,6 @@ public class Board {
 			RectangleMapObject rect = (RectangleMapObject) t;
 			if (t.getName().equals("Enemy Spawn Point")) {
 				e.start = new Vector2(rect.getRectangle().x / 16, rect.getRectangle().y / 16);
-				//RectangleMapObject end=(RectangleMapObject) rect.getProperties().get("Path");
 				e.end = new Vector2(e.start.x,e.start.y+4);
 			}
 		}	
@@ -110,4 +120,8 @@ public class Board {
 			}
 		}
 	}
+	
+	
+	
+	
 }

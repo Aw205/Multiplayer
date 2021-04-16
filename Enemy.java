@@ -8,10 +8,17 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
+
+import javax.swing.text.Position;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.mygdx.game.Board.Node;
 
 public class Enemy {
@@ -24,12 +31,18 @@ public class Enemy {
 	public Vector2 end;
 	private int target=0;
 	private int direction=1;
+	private float currentTime=0f;
+	
+	public Rectangle hitbox;
+	public int health=100;
 
 	public Enemy() {
 		
+		hitbox = new Rectangle();
+		hitbox.setSize(1,1);
 	}
 	
-	public void drawEnemy(SpriteBatch sb,float delta) {
+	public void draw(SpriteBatch sb) {
 		
 		TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
 		sb.draw(currentFrame, start.x, start.y, 2, 2);
@@ -37,11 +50,14 @@ public class Enemy {
 	
 	public void updateMovement(float delta) {
 		
+		currentTime+=delta;
+		
 		if(start.dst(path.get(target))>0.1f) {
-			start.lerp(path.get(target), 0.1f);
+			start.lerp(path.get(target), currentTime/2);
 			stateTime+=delta;
 		}
 		else if((target+direction)>-1 && (target+direction)<path.size()){
+			currentTime=0;
 			start.set(path.get(target));
 			stateTime=0;
 			target+=direction;	
@@ -49,10 +65,12 @@ public class Enemy {
 			currentAnimation=AnimationStyles.logAnimation.get(d);
 		}
 		else {
+			currentTime=0;
 			start.set(path.get(target));
 			direction=-direction;
 			target+=direction;
 		}
+		hitbox.setPosition(start.x+0.5f, start.y+0.5f);
 	}
 	
 	private int calcHeuristic(Node n) {

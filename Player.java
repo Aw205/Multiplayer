@@ -6,6 +6,7 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
@@ -27,13 +28,23 @@ public class Player {
 	Vector2 position;
 	Vector2 target;
 	Direction direction = Direction.UP;
-	AnimationStyles as = new AnimationStyles();
-	private Animation<TextureRegion> currentAnimation=AnimationStyles.walkForward;
+	AnimationStyles as;
+	private Animation<TextureRegion> currentAnimation;
 	String id;
 	private boolean isAttacking = false;
+	public Rectangle meleeHitbox = new Rectangle();
+	public Weapon bow;
+	private AssetsManager am;
+	
+	
 
-	public Player() {
+	public Player(AssetsManager am) {
+		this.am=am;
+		as = new AnimationStyles(am);
+		bow = new Weapon(am);
+		currentAnimation=AnimationStyles.walkForward;
 		this.id = generateID();
+		meleeHitbox.setSize(1, 1);
 	}
 
 	private String generateID() {
@@ -46,11 +57,14 @@ public class Player {
 
 		TextureRegion currentFrame = currentAnimation.getKeyFrame(AnimationStyles.stateTime, true);
 		sb.draw(currentFrame, position.x-0.5f, position.y-0.25f, 2, 2);
+		bow.draw(sb, 0);
 	}
 
 	public void handleInput(float delta) {
 		updateAttack(delta);
 		updateMovement(delta);
+		updateWeapon(delta);
+		
 	}
 	
 	private void updateMovement(float delta) {
@@ -61,10 +75,9 @@ public class Player {
 			return;
 		}
 		else if(!isAttacking){	
-			AnimationStyles.stateTime=0;
+			//AnimationStyles.stateTime=0;
 			position.set(target);
 		}
-		
 		if (Gdx.input.isKeyPressed(Keys.D)) {	
 			 direction=Direction.RIGHT;
 				  if(isValid((int) position.x+1,(int)position.y)) {
@@ -98,7 +111,7 @@ public class Player {
 	}
 	
 	private void updateAttack(float delta) {
-		if (isAttacking) {
+		if (isAttacking) {		
 			AnimationStyles.stateTime += delta;
 			if (currentAnimation.isAnimationFinished(AnimationStyles.stateTime)) {
 				isAttacking = false;
@@ -107,6 +120,10 @@ public class Player {
 		}
 		else if (Gdx.input.isKeyPressed(Keys.Q)) {
 			isAttacking = true;
+			setMeleeHitbox();
+			if(checkCollision()) {
+				GameScreen.textRenderer.stage.addActor(new FloatingText("25",new Vector3(position.x,position.y,0)));
+			}
 			currentAnimation = AnimationStyles.meleeAnimation.get(direction);
 			AnimationStyles.stateTime += delta;
 		}
@@ -117,8 +134,47 @@ public class Player {
 			Vector2 mouseLoc = new Vector2(mousePosition.x, mousePosition.y);
 			Vector2 velocity = mouseLoc.sub(position).nor();
 			
-			Board.projectiles.add(new Fireball(position,velocity));
+			Board.projectiles.add(new Arrow(position,velocity,am));
 			isAttacking = true;
+		}
+	}
+	
+	private void updateWeapon(float delta) {
+	
+		Vector3 mousePosition = new Vector3(Gdx.input.getX(),Gdx.input.getY(),0);
+		GameScreen.cam.unproject(mousePosition);
+		Vector2 mouseLoc = new Vector2(mousePosition.x, mousePosition.y);
+		Vector2 velocity = mouseLoc.sub(position);
+		float angle = velocity.angleDeg();
+		
+		bow.updatePosition(position, angle);
+	}
+	
+	private boolean checkCollision() {
+		
+		for(Enemy e : Board.enemies) {
+			if(meleeHitbox.overlaps(e.hitbox)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private void setMeleeHitbox() {
+
+		switch (direction) {
+			case RIGHT:
+				meleeHitbox.setPosition(position.x + 1, position.y);
+				break;
+			case LEFT:
+				meleeHitbox.setPosition(position.x - 1, position.y);
+				break;
+			case UP:
+				meleeHitbox.setPosition(position.x, position.y + 1);
+				break;
+			case DOWN:
+				meleeHitbox.setPosition(position.x, position.y - 1);
+				break;
 		}
 	}
 	

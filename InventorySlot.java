@@ -1,6 +1,6 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -8,11 +8,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 public class InventorySlot extends Container<InventoryItem> {
 	
 	public boolean hasItem=false;
-	Image slot = new Image(new Texture(Gdx.files.internal("slotTopLeft.png")));
+	Image slot;
 	
-	public InventorySlot() {
-		//this.setDebug(true);
+	public InventorySlot(AssetsManager am) {
+		
+		slot = new Image(am.manager.get("slotTopLeft.png",Texture.class));
 		this.setBackground(slot.getDrawable());
-		this.setActor(new InventoryItem());
+		this.setActor(new InventoryItem(am));
 	}
 }

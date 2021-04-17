@@ -1,6 +1,6 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -9,10 +9,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.DragListener;
 
 public class InventoryItem extends Image {
 	
-	Image sword = new Image(new Texture(Gdx.files.internal("sampleSword.png")));
+	Image sword;
 	
-	public InventoryItem() {
-		//this.setDebug(true);
+	public InventoryItem(AssetsManager am) {
+		sword = new Image(am.manager.get("sampleSword.png",Texture.class));
+	
 		this.setDrawable(sword.getDrawable());
 		this.addListener(new DragListener() {
 		    public void drag(InputEvent event, float x, float y, int pointer) {

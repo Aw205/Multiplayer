@@ -8,13 +8,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.VerticalGroup;
 
 public class Health_UI extends HorizontalGroup {
 	
-	Image knobBefore = new Image(new Texture(Gdx.files.internal("healthPortrait.png")));
+	Image heroPortrait = new Image(new Texture(Gdx.files.internal("healthPortrait.png")));
 	Image redMid = new Image(new Texture(Gdx.files.internal("redMid.png")));
 	Image emptyBar = new Image(new Texture(Gdx.files.internal("emptyHealth.png")));
 	VerticalGroup bar = new VerticalGroup();
+	
 	public Health_UI() {
 
-		this.addActor(knobBefore);
+		this.addActor(heroPortrait);
 		this.addActor(bar);
 		createBar();
 	}

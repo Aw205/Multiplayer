@@ -11,7 +11,6 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 
@@ -28,32 +27,35 @@ public class Board {
 			this.position = position;
 		}
 	}
+	
+	private AssetsManager am;
 
 	static Map<String, Player> players = new HashMap<String, Player>();
-	static List<Fireball> projectiles = new ArrayList<Fireball>();
+	static List<Arrow> projectiles = new ArrayList<Arrow>();
+	static List<Enemy> enemies = new ArrayList<Enemy>();
 	static Player p;
 	private TiledMapRenderer renderer;
 	private TiledMap map;
 	private MapLayer objectLayer;
 	static TiledMapTileLayer[] mapLayers = new TiledMapTileLayer[2];
 	static Node[][] nodeArray=new Node[100][100];
-	 Enemy e;
 	
-	public Board() {
+	public Board(AssetsManager am) {
+		this.am=am;
+		 map=am.manager.get("ForestMap/forestMap.tmx", TiledMap.class);
 		
-		map = new TmxMapLoader().load("ForestMap/forestMap.tmx");
 		mapLayers[0]=(TiledMapTileLayer) map.getLayers().get(0);
 		mapLayers[1]=(TiledMapTileLayer) map.getLayers().get(1);
 		objectLayer = map.getLayers().get("Object Layer 1");
 		
 		initPlayer();
 		
-		renderer = new OrthogonalTiledMapRenderer(map, 1 / 16f);
+		renderer = new OrthogonalTiledMapRenderer(map, 1/16f);
 		renderer.setView(GameScreen.cam);
 		createNodes();
-		e= new Enemy();
 		initEnemy();
 	}
+	
 
 	public void drawBoard() {
 
@@ -63,24 +65,32 @@ public class Board {
 
 		Multiplayer.sb.begin();
 
-		e.updateMovement(Gdx.graphics.getDeltaTime());
-		e.drawEnemy(Multiplayer.sb,Gdx.graphics.getDeltaTime());
+		drawEnemies();
 		for (Player p : players.values()) {
 			p.drawPlayer(Multiplayer.sb);
 		}
 		drawProjectiles(Gdx.graphics.getDeltaTime());
+		
 		Multiplayer.sb.end();
 	}
 	
 	private void drawProjectiles(float deltaTime) {
-		projectiles.removeIf(e-> (!e.isAlive && e.currentAnimation.isAnimationFinished(e.stateTime)));
-		for(Fireball fb: projectiles) {
+		//projectiles.removeIf(e-> (!e.isAlive && e.currentAnimation.isAnimationFinished(e.stateTime)));
+		projectiles.removeIf(e-> (!e.isAlive));
+		for(Arrow fb: projectiles) {
 			fb.draw(Multiplayer.sb, deltaTime);
 		}
 	}
 	
+	private void drawEnemies() {	
+		for(Enemy e: enemies) {
+			e.updateMovement(Gdx.graphics.getDeltaTime());
+			e.draw(Multiplayer.sb);
+		}
+	}
+	
 	private void initPlayer() {
-		p = new Player();
+		p = new Player(am);
 		players.put(p.id, p);
 		for (MapObject t : objectLayer.getObjects()) {
 			RectangleMapObject rect = (RectangleMapObject) t;
@@ -97,11 +107,14 @@ public class Board {
 		for (MapObject t : objectLayer.getObjects()) {
 			RectangleMapObject rect = (RectangleMapObject) t;
 			if (t.getName().equals("Enemy Spawn Point")) {
+				Enemy e = new Enemy();
+				enemies.add(e);
 				e.start = new Vector2(rect.getRectangle().x / 16, rect.getRectangle().y / 16);
 				e.end = new Vector2(e.start.x,e.start.y+4);
+				e.calculatePath();
 			}
 		}	
-		e.calculatePath();
+	
 	}
 	
 	private void createNodes() {
@@ -120,8 +133,4 @@ public class Board {
 			}
 		}
 	}
-	
-	
-	
-	
 }

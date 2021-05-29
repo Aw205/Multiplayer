@@ -1,0 +1,66 @@
+{
+  "weapons": [
+    {
+      "name": "LightBow1",
+      "damage": 10,
+      "range": 5,
+      "image_path": "Weapons/LightBow_1.png",
+      "frame_width": 52,
+      "frame_height": 52
+    },
+    {
+      "name": "LightBow2",
+      "damage": 7,
+      "range": 8,
+      "image_path": "Weapons/LightBow_2.png",
+"animations": [
+       	 {
+          "name": "none",
+          "index": 0
+       	 }
+     		 ],
+      "frame_width": 49,
+      "frame_height": 49
+    }
+  ],
+  "projectiles": [
+    {
+      "parent": "LightBow1",
+      "image_path": "Weapons/Light_Arrow_2.png",
+      "frame_width": 36,
+      "frame_height": 36
+    },
+    {
+      "parent": "LightBow2",
+      "image_path": "Weapons/Light_Arrow_2.png",
+      "frame_width": 36,
+      "frame_height": 36
+    }
+  ],
+  "enemies": [
+    {
+      "name": "log",
+      "image_path": "EnemyAnimations/logWalk.png",
+      "animations": [
+        {
+          "name": "moveDown",
+          "index": 0
+        },
+        {
+          "name": "moveUp",
+          "index": 1
+        },
+        {
+          "name": "moveRight",
+          "index": 2
+        },
+        {
+          "name": "moveLeft",
+          "index": 3
+        }
+      ],
+      "frame_width": 32,
+      "frame_height": 32
+    }
+  ]
+}

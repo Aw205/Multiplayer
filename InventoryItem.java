@@ -13,7 +13,6 @@ public class InventoryItem extends Image {
 	
 	public InventoryItem(AssetsManager am) {
 		sword = new Image(am.manager.get("sampleSword.png",Texture.class));
-	
 		this.setDrawable(sword.getDrawable());
 		this.addListener(new DragListener() {
 		    public void drag(InputEvent event, float x, float y, int pointer) {

@@ -1,47 +1,34 @@
-package com.mygdx.game;
+package com.mygdx.game.entity;
 
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.AssetsManager;
+import com.mygdx.game.component.AnimationComponent;
+import com.mygdx.game.component.AttackComponent;
+import com.mygdx.game.component.InputComponent;
+import com.mygdx.game.component.PositionComponent;
+import com.mygdx.game.component.RotationComponent;
+import com.mygdx.game.component.StatsComponent;
+import com.mygdx.game.component.WeaponComponent;
 
-public class Weapon {
-	
-	
-	private  Animation<TextureRegion> bowAnimation;
-	public Animation<TextureRegion> currentAnimation;
-	private float stateTime=0;
-	
-	private Vector2 position;
-	private float angle;
-	
+
+public class Weapon extends Entity implements Cloneable {
 	
 	public Weapon(AssetsManager am) {
 		
-		createAnimations(am);
+		this.components.add(new WeaponComponent());
+		this.components.add(new AnimationComponent(am));
+		this.components.add(new RotationComponent());
+		this.components.add(new PositionComponent());
+		this.components.add(new InputComponent());
+		this.components.add(new StatsComponent());
+		this.components.add(new AttackComponent());
+		//SystemsManager.notifySystems(this);
+		
 	}
 	
-	public void createAnimations(AssetsManager am) {
-		
-		Texture bowSheet= am.manager.get("LightBow_1.png",Texture.class);
-		TextureRegion[][] tmp = TextureRegion.split(bowSheet,52,52);		
-		bowAnimation = new Animation<TextureRegion>(0.1f, tmp[0]);
-	}
-	
-	public void draw(SpriteBatch sb, float delta) {
-	
-		TextureRegion currentFrame = bowAnimation.getKeyFrame(stateTime, true);
-		
-		float offsetY=(float) Math.sin(Math.toRadians(angle));
-		float offsetX=(float) Math.cos(Math.toRadians(angle));
-		
-		sb.draw(currentFrame,position.x-0.5f+offsetX, position.y-0.25f+offsetY,1,1,2,2,1,1, angle+45+180);
-		
-		}
-		
-	public void updatePosition(Vector2 position, float angle) {		
-		this.position=position;
-		this.angle=angle;
-	}
+	@Override
+	public Object clone()throws CloneNotSupportedException{  
+		return (Weapon)super.clone();  
+	   }
 }
+
+

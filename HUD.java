@@ -1,15 +1,10 @@
 package com.mygdx.game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar.ProgressBarStyle;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -37,7 +32,7 @@ public class HUD{
 	private void setUpTable() {
 		table.setFillParent(true);
 		createInventory();
-		//createLoadout();
+		createLoadout();
 		createHealthUI();
 	}
 	
@@ -66,7 +61,7 @@ public class HUD{
 	}
 	
 	private void createLoadout() {
-		Loadout loadout = new Loadout();
+		Loadout loadout = new Loadout(am);
 		loadout.setVisible(true);
 		table.add(loadout).left();
 	}

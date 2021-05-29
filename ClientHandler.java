@@ -20,10 +20,14 @@ public class ClientHandler extends Thread {
 	public void run(){
 		
 		while (true) {
-			String msg;
+			
 			try {
-				msg = dis.readUTF();
-				broadcastMessage(msg);
+				 String msg = dis.readUTF();
+				if(msg!=null) {
+					broadcastMessage(msg);
+				}
+				
+				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

@@ -1,10 +1,6 @@
 package com.mygdx.game;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import com.badlogic.gdx.Gdx;
+
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
@@ -13,15 +9,20 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.mygdx.game.component.AIComponent;
+import com.mygdx.game.component.PositionComponent;
+import com.mygdx.game.entity.Enemy;
+import com.mygdx.game.entity.Player;
+import com.mygdx.game.system.SystemsManager;
 
 public class Board {
 	
-	static class Node {
-		boolean isBlocked = false;
-		Vector2 position;
-		Node parent;
-		int g = 0;
-		int rank = -1;
+	public static class Node {
+		public boolean isBlocked = false;
+		public Vector2 position;
+		public Node parent;
+		public int g = 0;
+		public int rank = -1;
 
 		public Node(Vector2 position) {
 			this.position = position;
@@ -29,16 +30,13 @@ public class Board {
 	}
 	
 	private AssetsManager am;
-
-	static Map<String, Player> players = new HashMap<String, Player>();
-	static List<Arrow> projectiles = new ArrayList<Arrow>();
-	static List<Enemy> enemies = new ArrayList<Enemy>();
-	static Player p;
+	
+	public static Player p;
 	private TiledMapRenderer renderer;
 	private TiledMap map;
 	private MapLayer objectLayer;
 	static TiledMapTileLayer[] mapLayers = new TiledMapTileLayer[2];
-	static Node[][] nodeArray=new Node[100][100];
+	public static Node[][] nodeArray=new Node[100][100];
 	
 	public Board(AssetsManager am) {
 		this.am=am;
@@ -62,41 +60,17 @@ public class Board {
 		Multiplayer.sb.setProjectionMatrix(GameScreen.cam.combined);
 		renderer.setView(GameScreen.cam);
 		renderer.render();
-
-		Multiplayer.sb.begin();
-
-		drawEnemies();
-		for (Player p : players.values()) {
-			p.drawPlayer(Multiplayer.sb);
-		}
-		drawProjectiles(Gdx.graphics.getDeltaTime());
-		
-		Multiplayer.sb.end();
-	}
-	
-	private void drawProjectiles(float deltaTime) {
-		//projectiles.removeIf(e-> (!e.isAlive && e.currentAnimation.isAnimationFinished(e.stateTime)));
-		projectiles.removeIf(e-> (!e.isAlive));
-		for(Arrow fb: projectiles) {
-			fb.draw(Multiplayer.sb, deltaTime);
-		}
-	}
-	
-	private void drawEnemies() {	
-		for(Enemy e: enemies) {
-			e.updateMovement(Gdx.graphics.getDeltaTime());
-			e.draw(Multiplayer.sb);
-		}
 	}
 	
 	private void initPlayer() {
 		p = new Player(am);
-		players.put(p.id, p);
+		SystemsManager.notifySystems(p);
 		for (MapObject t : objectLayer.getObjects()) {
 			RectangleMapObject rect = (RectangleMapObject) t;
 			if (t.getName().equals("Player Spawn Point")) {
-				p.position = new Vector2(rect.getRectangle().x / 16, rect.getRectangle().y / 16);
-				p.target = new Vector2(p.position.x,p.position.y);
+				PositionComponent pos = (PositionComponent) p.getComponent(PositionComponent.class);
+				pos.position = new Vector2(rect.getRectangle().x / 16, rect.getRectangle().y / 16);
+				pos.target = new Vector2(pos.position.x,pos.position.y);
 				return;
 			}
 		}
@@ -107,11 +81,12 @@ public class Board {
 		for (MapObject t : objectLayer.getObjects()) {
 			RectangleMapObject rect = (RectangleMapObject) t;
 			if (t.getName().equals("Enemy Spawn Point")) {
-				Enemy e = new Enemy();
-				enemies.add(e);
-				e.start = new Vector2(rect.getRectangle().x / 16, rect.getRectangle().y / 16);
-				e.end = new Vector2(e.start.x,e.start.y+4);
-				e.calculatePath();
+				Enemy e= WeaponLoader.enemies.get("log");
+				AIComponent ai = e.getComponent(AIComponent.class);
+				ai.start = new Vector2(rect.getRectangle().x / 16, rect.getRectangle().y / 16);
+				ai.end = new Vector2(ai.start.x,ai.start.y+4);
+				ai.calculatePath();
+				SystemsManager.notifySystems(e);
 			}
 		}	
 	

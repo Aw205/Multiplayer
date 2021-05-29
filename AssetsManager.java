@@ -17,7 +17,7 @@ public class AssetsManager {
 	public AssetManager manager = new AssetManager();
 	
 	public AssetsManager() {
-		
+	
 		loadTextures();
 		loadMap();
 		loadFonts();
@@ -43,8 +43,7 @@ public class AssetsManager {
 	
 	
 	private void loadTextures() {
-		
-		
+			
 		manager.load("EnemyAnimations/logWalk.png", Texture.class);
 		manager.load("PlayerAnimations/charAttack.png", Texture.class);
 		manager.load("PlayerAnimations/charWalk.png", Texture.class);
@@ -68,8 +67,9 @@ public class AssetsManager {
 		manager.load("windowFrame.png", Texture.class);
 		
 		manager.load("sampleSword.png", Texture.class);
-		manager.load("LightBow_1.png", Texture.class);
-		manager.load("Light_Arrow_2.png", Texture.class);
+		manager.load("Weapons/LightBow_1.png", Texture.class);
+		manager.load("Weapons/LightBow_2.png", Texture.class);
+		manager.load("Weapons/Light_Arrow_2.png", Texture.class);
 	}
 
 }

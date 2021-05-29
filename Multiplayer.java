@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class Multiplayer extends Game {
 
-	static SpriteBatch sb;
+	public static SpriteBatch sb;
 	static ShapeRenderer sr;
 	private AssetsManager am;
 

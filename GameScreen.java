@@ -8,29 +8,41 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
+import com.mygdx.game.component.HitboxComponent;
+import com.mygdx.game.component.PositionComponent;
+import com.mygdx.game.entity.Entity;
+import com.mygdx.game.system.CollisionSystem;
+import com.mygdx.game.system.SystemsManager;
 
 public class GameScreen implements Screen {
 
-	static OrthographicCamera cam = new OrthographicCamera();
-	static InputMultiplexer multiplexer = new InputMultiplexer();
+	public static OrthographicCamera cam = new OrthographicCamera();
+	public static InputMultiplexer multiplexer = new InputMultiplexer();
 	final Multiplayer game;
 	Board board;
 	HUD hud;
-	static TextRenderer textRenderer = new TextRenderer();
+	public static TextRenderer textRenderer = new TextRenderer();
 	private final float VIEWPORT_WIDTH = 20;
 	private final float VIEWPORT_HEIGHT = 20;
 	private AssetsManager am;
+	private SystemsManager sm;
 
 	public GameScreen(Multiplayer game,AssetsManager am) {
 		this.game = game;
 		this.am=am;
-		// Client c = new Client();
-		// c.start();
+		
 		float aspectRatio = (float) Gdx.graphics.getHeight() / (float) Gdx.graphics.getWidth();
+		hud = new HUD(game.sb,am);
+		sm= new SystemsManager();
+		WeaponLoader.load(am);
 		cam.setToOrtho(false, VIEWPORT_WIDTH, VIEWPORT_HEIGHT * aspectRatio);
 		cam.update();
 		board = new Board(am);
-		hud = new HUD(game.sb,am);
+		
+		
+		/* Client c = new Client(am); c.start(); */
+		 
+		
 	}
 
 	@Override
@@ -39,32 +51,45 @@ public class GameScreen implements Screen {
 
 	@Override
 	public void render(float delta) {
-
-		Board.p.handleInput(delta);
-		updateCameraPosition();
 		
 		Gdx.gl.glClearColor(0,0,0,1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
 		board.drawBoard();
+		updateCameraPosition();
+		
+		Multiplayer.sb.begin();
+		
+		sm.updateSystems();
+		
+		Multiplayer.sb.end();
 		
 		//game.sb.setProjectionMatrix(hud.stage.getCamera().combined);
 		hud.stage.draw();
 		textRenderer.stage.draw();
-				
+
+		
 		
 		  Multiplayer.sr.setProjectionMatrix(GameScreen.cam.combined);
-		  Multiplayer.sr.begin(ShapeType.Filled); for(Arrow e: Board.projectiles) {
-		  Multiplayer.sr.rect(e.hitbox.x, e.hitbox.y, e.hitbox.width, e.hitbox.height); }
-		 
+		  Multiplayer.sr.begin(ShapeType.Filled);
+		  
+		  CollisionSystem c = (CollisionSystem) SystemsManager.systems.get(5);
+		  
+		  for (Entity e : c.entities) { HitboxComponent hb =
+		  e.getComponent(HitboxComponent.class); Multiplayer.sr.rect(hb.hitbox.x,
+		  hb.hitbox.y, hb.hitbox.width, hb.hitbox.height); }
+		  
 		  Multiplayer.sr.end();
+		 
+		 
+		 
 		 
 	}
 	
 	
 	private void updateCameraPosition() {
-		
-		Vector3 playerPosition = new Vector3(Board.p.position.x,Board.p.position.y,0);
+		PositionComponent pos = (PositionComponent) Board.p.getComponent(PositionComponent.class);
+		Vector3 playerPosition = new Vector3(pos.position.x,pos.position.y,0);
 		
 		if(cam.position.dst(playerPosition)>0.1f) {
 			cam.position.lerp(playerPosition, 0.1f);

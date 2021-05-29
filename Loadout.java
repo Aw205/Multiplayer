@@ -1,22 +1,33 @@
 package com.mygdx.game;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.scenes.scene2d.ui.HorizontalGroup;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
 
-public class Loadout extends Table{
+public class Loadout extends HorizontalGroup {
 	
-	Image left = new Image(new Texture(Gdx.files.internal("leftWeaponSlot.png")));
-	Image mid = new Image(new Texture(Gdx.files.internal("midWeaponSlot.png")));
-	Image right = new Image(new Texture(Gdx.files.internal("rightWeaponSlot.png")));
-	
+	private AssetsManager am;
+	private final int NUM_SLOTS=3;
 
-	public Loadout() {
+	public Loadout(AssetsManager am) {
 		//this.setDebug(true);
-		this.add(left);
-		this.add(mid);
-		this.add(right);
+		this.am=am;
+		createSlots();
 		
+	}
+	
+	private void createSlots() {
+
+		for (int i = 0; i < NUM_SLOTS; i++) {
+			InventorySlot s;
+			if (i == 0) {
+				s = new InventorySlot(am, new Image(am.manager.get("leftWeaponSlot.png", Texture.class)));
+			} else if (i == NUM_SLOTS - 1) {
+				s = new InventorySlot(am, new Image(am.manager.get("rightWeaponSlot.png", Texture.class)));
+			} else {
+				s = new InventorySlot(am, new Image(am.manager.get("midWeaponSlot.png", Texture.class)));
+			}
+			this.addActor(s);
+		}
 	}
 }
